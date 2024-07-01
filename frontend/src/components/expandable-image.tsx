@@ -21,7 +21,13 @@ function ExpandableImage({ src, alt, bottomRightSection, ...rest }: ExpandableIm
         bottomRightSection={bottomRightSection}
       >
         {expanded && (
-          <ExportedImage className={classes['lightbox-image']} src={src} alt={alt} fill />
+          <ExportedImage
+            className={classes['lightbox-image']}
+            src={src}
+            alt={alt}
+            fill
+            placeholder="empty"
+          />
         )}
       </Lightbox>
       <div
