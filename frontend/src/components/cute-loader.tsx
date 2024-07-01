@@ -43,7 +43,7 @@ function CuteLoader({ progress }: CuteLoaderProps) {
 
   const [hidden, setHidden] = useState(false)
 
-  const numBlocks = Math.max(Math.round(clamp(progress, 0, 1) * b), 1)
+  const numBlocks = Math.max(Math.floor(clamp(progress, 0, 1) * b), 1)
   if (numBlocks === b) {
     barWrapRef.current?.animate(
       {
