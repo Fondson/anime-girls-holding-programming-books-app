@@ -7,9 +7,6 @@ const defaultMetadataObj: Metadata = {
     default: 'Anime Girls Holding Programming Books',
   },
   description: 'null undefined',
-  openGraph: {
-    images: ['public/og-image.png'],
-  },
 }
 
 export function defaultMetadata() {
