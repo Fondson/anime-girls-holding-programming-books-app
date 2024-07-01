@@ -1,0 +1,16 @@
+a.nostyle:visited,
+a.nostyle:link {
+  text-decoration: inherit;
+  color: inherit;
+}
+
+a.web-link,
+a.web-link:visited {
+  color: var(--mantine-color-anchor);
+}
+
+html {
+  --cute-light-blue: #bde0fe;
+  --cute-dark-blue: #a2d2ff;
+  --mantine-color-body: var(--cute-light-blue);
+}

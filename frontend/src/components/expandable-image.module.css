@@ -1,0 +1,16 @@
+.actual-image {
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: none;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.lightbox-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

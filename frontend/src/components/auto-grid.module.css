@@ -1,0 +1,9 @@
+.container {
+  position: relative;
+  display: grid;
+  grid-auto-rows: var(--row-height);
+  grid-template-columns: repeat(auto-fill, minmax(var(--min-item-width), 1fr));
+  gap: var(--gap);
+  overflow: auto;
+  height: 100%;
+}

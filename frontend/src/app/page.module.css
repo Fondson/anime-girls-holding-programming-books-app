@@ -1,0 +1,84 @@
+.header {
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  align-items: center;
+  height: 60px;
+
+  @media (min-width: $mantine-breakpoint-md) {
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+  }
+
+  padding: 0 var(--mantine-spacing-sm);
+
+  .left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mantine-spacing-md);
+    margin-right: auto;
+    flex-shrink: 0;
+    margin-right: var(--mantine-spacing-md);
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: var(--mantine-spacing-md);
+    width: 100%;
+  }
+
+  .home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 8px;
+  }
+}
+
+.grid-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s;
+
+  &:hover {
+    filter: brightness(75%);
+  }
+}
+
+.page {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.search-bar {
+  width: 100%;
+  @media (min-width: $mantine-breakpoint-md) {
+    max-width: 33vw;
+  }
+}
+
+.search-bar-input {
+}
+
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mantine-spacing-md);
+  height: 100%;
+  width: 100%;
+}
+
+.about-button {
+  padding: 0;
+}
