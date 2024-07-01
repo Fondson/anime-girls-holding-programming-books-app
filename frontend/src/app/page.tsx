@@ -53,7 +53,7 @@ function Home() {
 
         for (let i = 0; i < data.length; i++) {
           worker.add(i, data[i].path)
-          setIndexProgress(i / data.length)
+          setIndexProgress((i + 1) / data.length)
           if (i % 100 === 0) await delay()
         }
         setWorkerReady(true)
