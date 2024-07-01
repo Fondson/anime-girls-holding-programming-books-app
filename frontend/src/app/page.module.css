@@ -82,3 +82,12 @@
 .about-button {
   padding: 0;
 }
+
+.image-web-link {
+  word-break: break-all;
+
+  font-size: var(--mantine-font-size-sm);
+  @media (min-width: $mantine-breakpoint-md) {
+    font-size: var(--mantine-font-size-md);
+  }
+}

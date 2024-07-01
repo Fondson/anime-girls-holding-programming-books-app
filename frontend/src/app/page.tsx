@@ -174,7 +174,11 @@ function Home() {
                 fill
                 sizes={`(max-width: ${theme.breakpoints.md}) 48vw, 33vw`}
                 bottomRightSection={
-                  <a href={data[i].url} target="_blank" className="web-link">
+                  <a
+                    href={data[i].url}
+                    target="_blank"
+                    className={`${classes['image-web-link']} web-link`}
+                  >
                     {data[i].path}
                   </a>
                 }
