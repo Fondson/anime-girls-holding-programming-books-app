@@ -525,6 +525,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-virtual@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@tanstack/react-virtual@npm:3.8.1"
+  dependencies:
+    "@tanstack/virtual-core": "npm:3.8.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/73c854d74eaeef4e517bb3f113f1128d07c3360a67aba5bb11a155dc736e3d0ea247f16ec6994d9814f93b709d813baf7f94056a150afa3933d9f97619781b69
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.8.1":
+  version: 3.8.1
+  resolution: "@tanstack/virtual-core@npm:3.8.1"
+  checksum: 10c0/62204497033c8c4fa3ab6f3257c2aa5ba449afcadae64a94a4999f4d31d4a47f47b033a20af4b1131639854d96b65a50f18ece8f526f996975740cb9919f2fc3
+  languageName: node
+  linkType: hard
+
 "@types/json5@npm:^0.0.29":
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
@@ -1807,6 +1826,7 @@ __metadata:
     "@mantine/hooks": "npm:^7.11.0"
     "@next/third-parties": "npm:^14.2.4"
     "@tabler/icons-react": "npm:^3.7.0"
+    "@tanstack/react-virtual": "npm:^3.8.1"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^20"
     "@types/react": "npm:^18"

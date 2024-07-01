@@ -1,4 +1,5 @@
 .actual-image {
+  height: 100%;
   position: relative;
   -webkit-tap-highlight-color: transparent;
   box-shadow: none;

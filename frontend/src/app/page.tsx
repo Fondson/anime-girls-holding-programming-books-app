@@ -15,7 +15,6 @@ import FlexSearch from 'flexsearch'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useAnimeGirlsHoldingProgrammingBooksData } from '~/lib/anime-girls-holding-programming-books-data'
 import { useDebouncedValue, useMediaQuery } from '@mantine/hooks'
-import AutoGrid from '~/components/auto-grid'
 import classes from '~/app/page.module.css'
 import ExpandableImage from '~/components/expandable-image'
 import shuffle from 'lodash-es/shuffle'
@@ -25,6 +24,7 @@ import { Gaegu } from 'next/font/google'
 import ExportedImage from 'next-image-export-optimizer'
 import logo from '~/icons/logo.png'
 import notFoundIcon from '~/icons/not-found.webp'
+import { useVirtualizer } from '@tanstack/react-virtual'
 
 const gaegu = Gaegu({ weight: ['400', '700'], subsets: ['latin'] })
 
@@ -40,7 +40,17 @@ function Home() {
   const [searchResults, setSearchResults] = useState<number[]>([])
   const [workerReady, setWorkerReady] = useState(false)
   const [debouncedSearchValue] = useDebouncedValue(searchValue, 500)
+
   const gridRef = useRef<HTMLDivElement>(null)
+
+  const colsPerRow = isMobile ? 2 : 3
+  const rowVirtualizer = useVirtualizer({
+    count: Math.ceil(searchResults.length / colsPerRow),
+    getScrollElement: () => gridRef.current,
+    estimateSize: () => window.innerHeight * 0.4, // 40vh
+    gap: 2,
+  })
+  const items = rowVirtualizer.getVirtualItems()
 
   const [indexProgress, setIndexProgress] = useState(0)
 
@@ -87,7 +97,7 @@ function Home() {
     }
     replace(`${pathname}?${params.toString()}`)
 
-    if (gridRef.current) gridRef.current.scroll({ top: 0, behavior: 'auto' })
+    rowVirtualizer.scrollToIndex(0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchValue, data, workerReady])
 
@@ -159,32 +169,72 @@ function Home() {
 
       {data &&
         (searchResults.length > 0 ? (
-          <AutoGrid
-            rowHeight="40vh"
-            minItemWidth={isMobile ? '48%' : '33%'}
-            gap="2px"
-            gridRef={gridRef}
+          <div
+            ref={gridRef}
+            style={{
+              height: '100%',
+              width: '100%',
+              overflow: 'auto',
+            }}
           >
-            {searchResults.map((i) => (
-              <ExpandableImage
-                className={`${classes['grid-image']}`}
-                key={data[i].path}
-                src={data[i].url}
-                alt={data[i].path}
-                fill
-                sizes={`(max-width: ${theme.breakpoints.md}) 48vw, 33vw`}
-                bottomRightSection={
-                  <a
-                    href={data[i].url}
-                    target="_blank"
-                    className={`${classes['image-web-link']} web-link`}
+            <div
+              style={{
+                height: rowVirtualizer.getTotalSize(),
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {items.map((virtualRow) => {
+                const searchResultIndex = Array.from({ length: colsPerRow })
+                  .map((_, j) => {
+                    const index = virtualRow.index * colsPerRow + j
+                    if (index >= searchResults.length) return null
+                    return { index }
+                  })
+                  .filter((i) => i !== null) as Array<{ index: number }>
+
+                return (
+                  <div
+                    key={virtualRow.index}
+                    className={`${classes['images-row']}`}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: `${virtualRow.size}px`,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
                   >
-                    {data[i].path}
-                  </a>
-                }
-              />
-            ))}
-          </AutoGrid>
+                    {searchResultIndex.map(({ index }) => {
+                      const dataIndex = searchResults[index]
+                      const imageData = data[dataIndex]
+                      return (
+                        <div key={dataIndex} className={`${classes['grid-image-container']}`}>
+                          <ExpandableImage
+                            className={`${classes['grid-image']}`}
+                            src={imageData.url}
+                            alt={imageData.path}
+                            fill
+                            sizes={`(max-width: ${theme.breakpoints.md}) 48vw, 33vw`}
+                            bottomRightSection={
+                              <a
+                                href={imageData.url}
+                                target="_blank"
+                                className={`${classes['image-web-link']} web-link`}
+                              >
+                                {imageData.path}
+                              </a>
+                            }
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         ) : (
           <div className={classes['not-found-container']}>
             <ExportedImage src={notFoundIcon} alt="No results found" height={150} />
