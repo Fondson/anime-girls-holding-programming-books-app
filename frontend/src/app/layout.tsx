@@ -14,12 +14,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript forceColorScheme="light" />
       </head>
 
       <body>
         <MantineProvider
-          defaultColorScheme="auto"
+          forceColorScheme="light"
           theme={{
             fontFamily: `${inter.style.fontFamily}, sans-serif`,
             spacing: {
