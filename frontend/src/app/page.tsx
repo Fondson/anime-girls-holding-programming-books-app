@@ -216,7 +216,7 @@ function Home() {
                             src={imageData.url}
                             alt={imageData.path}
                             fill
-                            sizes={`(max-width: ${theme.breakpoints.md}) 48vw, 33vw`}
+                            sizes={`(max-width: ${theme.breakpoints.md}) 49vw, 33vw`}
                             bottomRightSection={
                               <a
                                 href={imageData.url}
