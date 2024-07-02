@@ -47,7 +47,7 @@ function Home() {
   const rowVirtualizer = useVirtualizer({
     count: Math.ceil(searchResults.length / colsPerRow),
     getScrollElement: () => gridRef.current,
-    estimateSize: () => window.innerHeight * 0.4, // 40vh
+    estimateSize: () => window.innerHeight * 0.4,
     gap: 2,
   })
   const items = rowVirtualizer.getVirtualItems()
