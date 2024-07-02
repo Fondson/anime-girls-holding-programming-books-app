@@ -54,7 +54,15 @@ function Home() {
 
   const [indexProgress, setIndexProgress] = useState(0)
 
-  const worker = useMemo(() => new FlexSearch.Index({ preset: 'default', tokenize: 'forward' }), [])
+  const worker = useMemo(
+    () =>
+      new FlexSearch.Index({
+        preset: 'default',
+        tokenize: 'forward',
+        encode: (str) => str.toLowerCase().split(/[^a-z+#]+/),
+      }),
+    [],
+  )
   useEffect(() => {
     const addData = async () => {
       if (data && !loading && worker && !workerReady) {
