@@ -37,7 +37,7 @@ function Home() {
 
   const { data, loading, error, refetch, abort } = useAnimeGirlsHoldingProgrammingBooksData()
   const [searchValue, setSearchValue] = useState(searchParams.get('q') || '')
-  const [searchResults, setSearchResults] = useState<number[]>([])
+  const [searchResults, setSearchResults] = useState<number[] | null>(null)
   const [workerReady, setWorkerReady] = useState(false)
   const [debouncedSearchValue] = useDebouncedValue(searchValue, 500)
 
@@ -45,7 +45,7 @@ function Home() {
 
   const colsPerRow = isMobile ? 2 : 3
   const rowVirtualizer = useVirtualizer({
-    count: Math.ceil(searchResults.length / colsPerRow),
+    count: searchResults ? Math.ceil(searchResults.length / colsPerRow) : 0,
     getScrollElement: () => gridRef.current,
     estimateSize: () => window.innerHeight * 0.4,
     gap: 2,
@@ -176,6 +176,7 @@ function Home() {
       {isMobile && searchBar}
 
       {data &&
+        searchResults &&
         (searchResults.length > 0 ? (
           <div
             ref={gridRef}
