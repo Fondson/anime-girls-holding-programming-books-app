@@ -16,7 +16,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useAnimeGirlsHoldingProgrammingBooksData } from '~/lib/anime-girls-holding-programming-books-data'
 import { useDebouncedValue, useMediaQuery } from '@mantine/hooks'
 import classes from '~/app/page.module.css'
-import ExpandableImage from '~/components/expandable-image'
+import ExpandableImages from '~/components/expandable-images'
 import shuffle from 'lodash-es/shuffle'
 import CuteLoader from '~/components/cute-loader'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -193,55 +193,65 @@ function Home() {
                 position: 'relative',
               }}
             >
-              {items.map((virtualRow) => {
-                const searchResultIndex = Array.from({ length: colsPerRow })
-                  .map((_, j) => {
-                    const index = virtualRow.index * colsPerRow + j
-                    if (index >= searchResults.length) return null
-                    return { index }
-                  })
-                  .filter((i) => i !== null) as Array<{ index: number }>
+              {/* Convert all search results to image array once */}
+              {(() => {
+                const allImages = searchResults.map((idx) => {
+                  const img = data[idx]
+                  return {
+                    src: img.url,
+                    alt: img.path,
+                    path: img.path,
+                  }
+                })
 
-                return (
-                  <div
-                    key={virtualRow.index}
-                    className={`${classes['images-row']}`}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: `${virtualRow.size}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                  >
-                    {searchResultIndex.map(({ index }) => {
-                      const dataIndex = searchResults[index]
-                      const imageData = data[dataIndex]
-                      return (
-                        <div key={dataIndex} className={`${classes['grid-image-container']}`}>
-                          <ExpandableImage
-                            className={`${classes['grid-image']}`}
-                            src={imageData.url}
-                            alt={imageData.path}
-                            fill
-                            sizes={`(max-width: ${theme.breakpoints.md}) 49vw, 33vw`}
-                            bottomRightSection={
-                              <a
-                                href={imageData.url}
-                                target="_blank"
-                                className={`${classes['image-web-link']} web-link`}
-                              >
-                                {imageData.path}
-                              </a>
-                            }
-                          />
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              })}
+                return items.map((virtualRow) => {
+                  const searchResultIndex = Array.from({ length: colsPerRow })
+                    .map((_, j) => {
+                      const index = virtualRow.index * colsPerRow + j
+                      if (index >= searchResults.length) return null
+                      return { index }
+                    })
+                    .filter((i) => i !== null) as Array<{ index: number }>
+
+                  return (
+                    <div
+                      key={virtualRow.index}
+                      className={`${classes['images-row']}`}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      {searchResultIndex.map(({ index }) => {
+                        return (
+                          <div key={index} className={`${classes['grid-image-container']}`}>
+                            <ExpandableImages
+                              className={`${classes['grid-image']}`}
+                              images={allImages}
+                              initialImageIndex={index}
+                              fill
+                              sizes={`(max-width: ${theme.breakpoints.md}) 49vw, 33vw`}
+                              bottomRightSection={(currentImage) => (
+                                <a
+                                  href={currentImage.src}
+                                  target="_blank"
+                                  className={`${classes['image-web-link']} web-link`}
+                                >
+                                  {currentImage.path}
+                                </a>
+                              )}
+                            />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })
+              })()}
             </div>
           </div>
         ) : (
