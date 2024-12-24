@@ -27,13 +27,16 @@ function Lightbox({
   nextImage,
   prevImage,
 }: LightboxProps) {
-  const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [offsetX, setOffsetX] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [pendingImageChange, setPendingImageChange] = useState<'next' | 'prev' | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null)
+  // Using a ref instead of state for drag tracking because:
+  // 1. We need synchronous updates during drag events to avoid race conditions
+  // 2. Changes to this value shouldn't trigger re-renders
+  // 3. We need to reliably distinguish between clicks and drags immediately
   const hasDraggedRef = useRef(false)
   const dragThreshold = 5 // pixels of movement before considering it a drag
 
@@ -61,34 +64,24 @@ function Lightbox({
           if (direction !== null) {
             onComplete?.()
             setPendingImageChange(null)
-            setOffsetX(direction === 'next' ? window.innerWidth : -window.innerWidth)
-            requestAnimationFrame(() => {
-              setOffsetX(0)
-              setIsTransitioning(false)
-              setIsDragging(false)
-              mouseDownPosRef.current = null
-              hasDraggedRef.current = false
-            })
-          } else {
-            // For reset animation (when drag doesn't hit threshold)
             setOffsetX(0)
-            setIsTransitioning(false)
-            setIsDragging(false)
-            mouseDownPosRef.current = null
-            hasDraggedRef.current = false
+          } else {
+            setOffsetX(0)
             setPendingImageChange(null)
           }
+          setIsTransitioning(false)
+          hasDraggedRef.current = false
+          mouseDownPosRef.current = null
         }
       }
 
       requestAnimationFrame(animate)
     },
-    [isTransitioning, offsetX, mouseDownPosRef, hasDraggedRef],
+    [isTransitioning, offsetX],
   )
 
   const handleDragStart = (clientX: number, clientY?: number) => {
     if (isTransitioning) return
-    setIsDragging(false)
     hasDraggedRef.current = false
     setStartX(clientX - offsetX)
     mouseDownPosRef.current = { x: clientX, y: clientY ?? 0 }
@@ -97,17 +90,16 @@ function Lightbox({
   const handleDragMove = (clientX: number, clientY?: number) => {
     if (isTransitioning) return
 
-    if (!isDragging && mouseDownPosRef.current !== null) {
+    if (!hasDraggedRef.current && mouseDownPosRef.current !== null) {
       const deltaX = Math.abs(clientX - mouseDownPosRef.current.x)
       const deltaY = Math.abs((clientY ?? 0) - mouseDownPosRef.current.y)
 
       if (deltaX > dragThreshold || deltaY > dragThreshold) {
-        setIsDragging(true)
         hasDraggedRef.current = true
       }
     }
 
-    if (isDragging) {
+    if (hasDraggedRef.current) {
       const currentOffset = clientX - startX
       const maxOffset = window.innerWidth
       const boundedOffset = Math.max(Math.min(currentOffset, maxOffset), -maxOffset)
@@ -118,9 +110,7 @@ function Lightbox({
   const handleDragEnd = () => {
     if (mouseDownPosRef.current === null) return
 
-    const wasActuallyDragging = isDragging || hasDraggedRef.current
-    if (!wasActuallyDragging || isTransitioning) {
-      setIsDragging(false)
+    if (!hasDraggedRef.current || isTransitioning) {
       mouseDownPosRef.current = null
       hasDraggedRef.current = false
       return
@@ -172,7 +162,12 @@ function Lightbox({
       const deltaY = Math.abs(coords.clientY - mouseDownPosRef.current.y)
 
       // If it was a click/tap (minimal movement) and not dragging, close the lightbox
-      if (deltaX <= dragThreshold && deltaY <= dragThreshold && !isDragging && !isTransitioning) {
+      if (
+        deltaX <= dragThreshold &&
+        deltaY <= dragThreshold &&
+        !hasDraggedRef.current &&
+        !isTransitioning
+      ) {
         onExitHandler()
         mouseDownPosRef.current = null
         return
@@ -242,14 +237,18 @@ function Lightbox({
             className={classes['images-container']}
             style={{
               transform: `translateX(${offsetX}px)`,
-              transition:
-                isDragging || isTransitioning
-                  ? 'none'
-                  : 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+              willChange: 'transform',
             }}
           >
             {hasPrev && prevImage && (
-              <div className={classes['prev-image']} aria-hidden="true">
+              <div
+                className={classes['prev-image']}
+                aria-hidden="true"
+                style={{
+                  opacity: offsetX > 0 ? 1 : 0,
+                  pointerEvents: 'none',
+                }}
+              >
                 {prevImage}
               </div>
             )}
@@ -257,7 +256,14 @@ function Lightbox({
               {children}
             </div>
             {hasNext && nextImage && (
-              <div className={classes['next-image']} aria-hidden="true">
+              <div
+                className={classes['next-image']}
+                aria-hidden="true"
+                style={{
+                  opacity: offsetX < 0 ? 1 : 0,
+                  pointerEvents: 'none',
+                }}
+              >
                 {nextImage}
               </div>
             )}
