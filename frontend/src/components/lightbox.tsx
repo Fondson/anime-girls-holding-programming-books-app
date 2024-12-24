@@ -109,7 +109,7 @@ function Lightbox({
 
     if (isDragging) {
       const currentOffset = clientX - startX
-      const maxOffset = window.innerWidth * 0.3
+      const maxOffset = window.innerWidth
       const boundedOffset = Math.max(Math.min(currentOffset, maxOffset), -maxOffset)
       setOffsetX(boundedOffset)
     }
