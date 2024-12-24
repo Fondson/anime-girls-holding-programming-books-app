@@ -27,33 +27,32 @@ function ExpandableImages({
   ...rest
 }: ExpandableImagesProps) {
   const [expanded, setExpanded] = useState(false)
-  const currentIndexRef = useRef(initialImageIndex)
-  const [, forceUpdate] = useState({})
+  const [currentIndex, setCurrentIndex] = useState(initialImageIndex)
 
-  // Reset currentIndexRef when initialImageIndex changes
+  // Reset currentIndex when initialImageIndex changes
   useEffect(() => {
-    currentIndexRef.current = initialImageIndex
+    setCurrentIndex(initialImageIndex)
   }, [initialImageIndex])
 
-  const currentImage = images[currentIndexRef.current]
+  const currentImage = images[currentIndex]
+  const nextImage = currentIndex < images.length - 1 ? images[currentIndex + 1] : null
+  const prevImage = currentIndex > 0 ? images[currentIndex - 1] : null
 
   const handleNext = () => {
-    if (currentIndexRef.current < images.length - 1) {
-      currentIndexRef.current += 1
-      forceUpdate({})
+    if (currentIndex < images.length - 1) {
+      setCurrentIndex(currentIndex + 1)
     }
   }
 
   const handlePrev = () => {
-    if (currentIndexRef.current > 0) {
-      currentIndexRef.current -= 1
-      forceUpdate({})
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1)
     }
   }
 
   const handleClose = () => {
     setExpanded(false)
-    currentIndexRef.current = initialImageIndex
+    setCurrentIndex(initialImageIndex)
   }
 
   if (!currentImage) {
@@ -63,6 +62,16 @@ function ExpandableImages({
   const bottomRightContent =
     typeof bottomRightSection === 'function' ? bottomRightSection(currentImage) : bottomRightSection
 
+  const renderImage = (image: ImageInfo) => (
+    <ExportedImage
+      className={classes['lightbox-image']}
+      src={image.src}
+      alt={image.alt}
+      fill
+      placeholder="empty"
+    />
+  )
+
   return (
     <>
       <Lightbox
@@ -71,18 +80,12 @@ function ExpandableImages({
         bottomRightSection={bottomRightContent}
         onNext={handleNext}
         onPrev={handlePrev}
-        hasNext={currentIndexRef.current < images.length - 1}
-        hasPrev={currentIndexRef.current > 0}
+        hasNext={currentIndex < images.length - 1}
+        hasPrev={currentIndex > 0}
+        nextImage={nextImage && renderImage(nextImage)}
+        prevImage={prevImage && renderImage(prevImage)}
       >
-        {expanded && (
-          <ExportedImage
-            className={classes['lightbox-image']}
-            src={currentImage.src}
-            alt={currentImage.alt}
-            fill
-            placeholder="empty"
-          />
-        )}
+        {expanded && renderImage(currentImage)}
       </Lightbox>
       <div
         className={classes['actual-image']}

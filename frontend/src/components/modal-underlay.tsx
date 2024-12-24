@@ -6,24 +6,11 @@ interface ModalUnderlayProps {
   children: React.ReactNode
   onExitHandler: () => void
   expanded?: boolean
-  allowExitAnywhere?: boolean
   [key: string]: any
 }
 
-function ModalUnderlay({
-  children,
-  onExitHandler,
-  expanded = false,
-  allowExitAnywhere = false,
-  ...rest
-}: ModalUnderlayProps) {
+function ModalUnderlay({ children, onExitHandler, expanded = false, ...rest }: ModalUnderlayProps) {
   const modal = useRef<HTMLDivElement>(null)
-  const clickPressHandler = (e: React.MouseEvent | React.KeyboardEvent) => {
-    if (!allowExitAnywhere && e.target !== modal.current) return
-    e.preventDefault()
-    e.stopPropagation()
-    onExitHandler()
-  }
   useEffect(() => {
     if (expanded) {
       document.body.style.overflow = 'hidden'
@@ -36,8 +23,6 @@ function ModalUnderlay({
     <div
       ref={modal}
       className={`${classes['modal-underlay']} ${expanded ? ` ${classes['modal-underlay--expanded']}` : ''}`}
-      onClick={clickPressHandler}
-      onKeyPress={clickPressHandler}
       tabIndex={0}
       role="button"
       {...rest}
