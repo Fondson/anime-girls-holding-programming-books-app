@@ -16,8 +16,8 @@
     "@tanstack/react-virtual": "^3.8.1",
     "flexsearch": "^0.7.43",
     "lodash-es": "^4.17.21",
-    "next": "14.2.4",
-    "next-image-export-optimizer": "^1.14.1",
+    "next": "^14.2.4",
+    "next-image-export-optimizer": "Fondson/next-image-export-optimizer#with-dist",
     "react": "^18",
     "react-dom": "^18"
   },
