@@ -10,11 +10,12 @@ import {
   PopoverDropdown,
   Button,
   Code,
+  Kbd,
 } from '@mantine/core'
 import FlexSearch from 'flexsearch'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useAnimeGirlsHoldingProgrammingBooksData } from '~/lib/anime-girls-holding-programming-books-data'
-import { useDebouncedValue, useMediaQuery } from '@mantine/hooks'
+import { useDebouncedValue, useMediaQuery, useHotkeys } from '@mantine/hooks'
 import classes from '~/app/page.module.css'
 import ExpandableImages from '~/components/expandable-images'
 import shuffle from 'lodash-es/shuffle'
@@ -113,21 +114,32 @@ function Home() {
     setSearchValue(val)
   }
 
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  useHotkeys([
+    [
+      '/',
+      () => {
+        // Don't trigger if user is typing in an input field
+        if (
+          document.activeElement instanceof HTMLInputElement ||
+          document.activeElement instanceof HTMLTextAreaElement
+        ) {
+          return
+        }
+        searchInputRef.current?.focus()
+        searchInputRef.current?.select()
+      },
+    ],
+  ])
+
   const searchBar = (
     <TextInput
       classNames={{ root: classes['search-bar'], input: classes['search-bar-input'] }}
       placeholder="Search"
       value={searchValue}
       onChange={(event) => onSearchValueChange(event.currentTarget.value)}
-      // autofocus input and move cursor to the end
-      // @ts-ignore
-      ref={(textInputRef) => textInputRef && textInputRef.focus()}
-      onFocus={(e) =>
-        e.currentTarget.setSelectionRange(
-          e.currentTarget.value.length,
-          e.currentTarget.value.length,
-        )
-      }
+      ref={searchInputRef}
+      rightSection={!isMobile && <Kbd size="xs">/</Kbd>}
     />
   )
 

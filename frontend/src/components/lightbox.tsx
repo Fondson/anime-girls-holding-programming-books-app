@@ -200,6 +200,12 @@ function Lightbox({
       } else if (e.key === 'Escape') {
         e.preventDefault()
         onExitHandler()
+      } else if (e.key.toLowerCase() === 'k' && onNext && hasNext) {
+        e.preventDefault()
+        animateTransition(-window.innerWidth, 'next', onNext)
+      } else if (e.key.toLowerCase() === 'j' && onPrev && hasPrev) {
+        e.preventDefault()
+        animateTransition(window.innerWidth, 'prev', onPrev)
       }
     }
 
@@ -214,7 +220,7 @@ function Lightbox({
         tabIndex={0}
         role="dialog"
         aria-modal="true"
-        aria-label="Image lightbox"
+        aria-label="Image lightbox (use J/K or arrow keys to navigate)"
         onKeyPress={(e) => {
           e.preventDefault()
           e.stopPropagation()
