@@ -145,7 +145,6 @@ function Home() {
     />
   )
 
-  // Convert all images to the format needed once
   const allImages = useMemo(() => {
     if (!data) return []
     return data.map((img) => ({
@@ -222,9 +221,8 @@ function Home() {
                 position: 'relative',
               }}
             >
-              {/* Convert all search results to image array once */}
               {(() => {
-                const allImages = searchResults.map((idx) => {
+                const allSearchImages = searchResults.map((idx) => {
                   const img = data[idx]
                   return {
                     src: img.url,
@@ -260,7 +258,7 @@ function Home() {
                           <div key={index} className={`${classes['grid-image-container']}`}>
                             <ExpandableImages
                               className={`${classes['grid-image']}`}
-                              images={allImages}
+                              images={allSearchImages}
                               initialImageIndex={index}
                               fill
                               sizes={`(max-width: ${theme.breakpoints.md}) 49vw, 33vw`}
