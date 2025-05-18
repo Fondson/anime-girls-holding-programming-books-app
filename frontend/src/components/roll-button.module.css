@@ -1,0 +1,84 @@
+.image-web-link {
+  color: white;
+  word-break: break-all;
+
+  font-size: var(--mantine-font-size-sm);
+  @media (min-width: $mantine-breakpoint-md) {
+    font-size: var(--mantine-font-size-md);
+  }
+}
+
+.roll-button {
+  position: fixed;
+  bottom: var(--mantine-spacing-md);
+  right: var(--mantine-spacing-md);
+  z-index: 100;
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+  border-radius: 24px;
+  background-color: var(--mantine-color-pink-4);
+  color: white;
+  font-weight: 700;
+  font-size: 1.2em;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 2px solid var(--mantine-color-pink-3);
+  animation: float 3s ease-in-out infinite;
+  white-space: nowrap;
+  height: auto;
+
+  &:hover {
+    background-color: var(--mantine-color-pink-5);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(-2px) scale(0.98);
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  /* Add a subtle glow effect */
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--mantine-color-pink-3), var(--mantine-color-pink-5));
+    border-radius: 26px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover::after {
+    opacity: 0.5;
+  }
+}
+
+.hide-on-mobile {
+  display: inline;
+}
+
+@media (max-width: $mantine-breakpoint-md) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}

@@ -26,6 +26,7 @@ import ExportedImage from 'next-image-export-optimizer'
 import logo from '~/icons/logo.png'
 import notFoundIcon from '~/icons/not-found.webp'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import RollButton from '~/components/roll-button'
 
 const gaegu = Gaegu({ weight: ['400', '700'], subsets: ['latin'] })
 
@@ -54,6 +55,7 @@ function Home() {
   const items = rowVirtualizer.getVirtualItems()
 
   const [indexProgress, setIndexProgress] = useState(0)
+  const [gridImageExpanded, setGridImageExpanded] = useState(false)
 
   const worker = useMemo(
     () =>
@@ -142,6 +144,21 @@ function Home() {
       rightSection={!isMobile && <Kbd size="xs">/</Kbd>}
     />
   )
+
+  // Convert all images to the format needed once
+  const allImages = useMemo(() => {
+    if (!data) return []
+    return data.map((img) => ({
+      src: img.url,
+      alt: img.path,
+      path: img.path,
+    }))
+  }, [data])
+
+  // Callback for when a grid image is expanded or closed
+  const handleGridImageExpandChange = (expanded: boolean) => {
+    setGridImageExpanded(expanded)
+  }
 
   return (
     <main className={classes['page']}>
@@ -247,7 +264,8 @@ function Home() {
                               initialImageIndex={index}
                               fill
                               sizes={`(max-width: ${theme.breakpoints.md}) 49vw, 33vw`}
-                              bottomRightSection={(currentImage) => (
+                              onExpandChange={handleGridImageExpandChange}
+                              topRightSection={(currentImage) => (
                                 <a
                                   href={currentImage.src}
                                   target="_blank"
@@ -272,6 +290,7 @@ function Home() {
             <Code>{`console.log('No results found')`}</Code>
           </div>
         ))}
+      {!gridImageExpanded && <RollButton images={allImages} fontFamily={gaegu.style.fontFamily} />}
     </main>
   )
 }

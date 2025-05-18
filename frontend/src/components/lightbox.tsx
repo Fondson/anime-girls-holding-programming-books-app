@@ -6,6 +6,7 @@ interface LightboxProps {
   onExitHandler: () => void
   expanded: boolean
   bottomRightSection?: React.ReactNode
+  topRightSection?: React.ReactNode
   children: React.ReactNode
   onNext?: () => void
   onPrev?: () => void
@@ -19,6 +20,7 @@ function Lightbox({
   onExitHandler,
   expanded,
   bottomRightSection,
+  topRightSection,
   children,
   onNext,
   onPrev,
@@ -215,6 +217,16 @@ function Lightbox({
 
   return (
     <ModalUnderlay expanded={expanded} onExitHandler={onExitHandler}>
+      {topRightSection && (
+        <div
+          className={classes['top-right-section']}
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
+        >
+          {topRightSection}
+        </div>
+      )}
       <div
         className={classes['lightbox']}
         tabIndex={0}

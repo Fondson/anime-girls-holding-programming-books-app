@@ -58,6 +58,14 @@
   z-index: 2;
 }
 
+.top-right-section {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: var(--mantine-spacing-sm);
+  z-index: 2;
+}
+
 .navigation-controls {
   position: absolute;
   top: 50%;
