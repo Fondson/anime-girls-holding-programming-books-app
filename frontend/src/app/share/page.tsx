@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import styles from './page.module.css'
 import { useSearchParams } from 'next/navigation'
 import { calculateRarity, RarityInfo } from '~/lib/rarity'
@@ -22,7 +22,8 @@ interface SharedRollData {
   error: string | null
 }
 
-export default function SharePage() {
+// Create a new client component for the content that uses useSearchParams
+function ShareContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { data: images, error: imagesError } = useAnimeGirlsHoldingProgrammingBooksData()
@@ -67,85 +68,89 @@ export default function SharePage() {
   useHotkeys([['r', handleRoll]])
 
   return (
-    <div className={styles.page}>
-      {(rollData.imageUrl || rollData.error) && (
-        <div className={styles['share-container']}>
-          <div className={styles.content}>
-            {rollData.error && <div className={styles['error-text']}>{rollData.error}</div>}
+    <div className={styles['share-container']}>
+      <div className={styles.content}>
+        {rollData.error && <div className={styles['error-text']}>{rollData.error}</div>}
 
-            <div className={styles['main-content']}>
-              {rollData.imageUrl && !rollData.error && (
-                <div className={styles['roll-display']}>
-                  <div className={styles['image-wrapper']}>
-                    <Link href={rollData.imageUrl} target="_blank" rel="noopener noreferrer">
-                      <img
-                        src={rollData.imageUrl}
-                        alt="Shared gacha roll"
-                        className={styles['shared-image']}
-                      />
-                    </Link>
-                    {rollData.rarityInfo && (
-                      <div className={styles['rarity-wrapper']}>
-                        <RarityAnimation
-                          rank={rollData.rarityInfo.rank}
-                          trigger={animationTrigger}
-                        />
-                      </div>
-                    )}
+        <div className={styles['main-content']}>
+          {rollData.imageUrl && !rollData.error && (
+            <div className={styles['roll-display']}>
+              <div className={styles['image-wrapper']}>
+                <Link href={rollData.imageUrl} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={rollData.imageUrl}
+                    alt="Shared gacha roll"
+                    className={styles['shared-image']}
+                  />
+                </Link>
+                {rollData.rarityInfo && (
+                  <div className={styles['rarity-wrapper']}>
+                    <RarityAnimation rank={rollData.rarityInfo.rank} trigger={animationTrigger} />
                   </div>
-                  {rollData.imagePath && (
-                    <div className={styles['image-path']}>{rollData.imagePath}</div>
-                  )}
-                </div>
-              )}
-
-              <div className={styles.cta}>
-                <Text className={styles['cta-text']} style={{ fontFamily: gaegu.style.fontFamily }}>
-                  {rollData.rarityInfo?.rank ? (
-                    <>
-                      Someone rolled a{' '}
-                      <span style={{ color: 'var(--mantine-color-pink-6)', fontWeight: 700 }}>
-                        {rollData.rarityInfo.rank}-Rank
-                      </span>{' '}
-                      programming waifu!
-                      <br />
-                      {rollData.rarityInfo.rank === 'SSS' ? (
-                        <span className={styles['emoji-wrap']}>
-                          Can you match this perfect roll? 🌟
-                        </span>
-                      ) : (
-                        <span className={styles['emoji-wrap']}>Think you can beat this? ✨</span>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <span className={styles['emoji-wrap']}>
-                        Ready to gacha programming waifus? 🎲
-                      </span>
-                    </>
-                  )}
-                </Text>
-                <Button
-                  component={Link}
-                  href="/?roll=true"
-                  size="lg"
-                  className={styles['roll-button']}
-                  leftSection={<IconDice size={24} />}
-                  rightSection={
-                    <div className={styles['hide-mobile']}>
-                      <Kbd>R</Kbd>
-                    </div>
-                  }
-                  style={{ fontFamily: gaegu.style.fontFamily }}
-                >
-                  Enter gacha hell
-                </Button>
+                )}
               </div>
+              {rollData.imagePath && (
+                <div className={styles['image-path']}>{rollData.imagePath}</div>
+              )}
             </div>
-            <div className={styles['mobile-spacer']} />
+          )}
+
+          <div className={styles.cta}>
+            <Text className={styles['cta-text']} style={{ fontFamily: gaegu.style.fontFamily }}>
+              {rollData.rarityInfo?.rank ? (
+                <>
+                  Someone rolled a{' '}
+                  <span style={{ color: 'var(--mantine-color-pink-6)', fontWeight: 700 }}>
+                    {rollData.rarityInfo.rank}-Rank
+                  </span>{' '}
+                  programming waifu!
+                  <br />
+                  {rollData.rarityInfo.rank === 'SSS' ? (
+                    <span className={styles['emoji-wrap']}>
+                      Can you match this perfect roll? 🌟
+                    </span>
+                  ) : (
+                    <span className={styles['emoji-wrap']}>Think you can beat this? ✨</span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span className={styles['emoji-wrap']}>
+                    Ready to gacha programming waifus? 🎲
+                  </span>
+                </>
+              )}
+            </Text>
+            <Button
+              component={Link}
+              href="/?roll=true"
+              size="lg"
+              className={styles['roll-button']}
+              leftSection={<IconDice size={24} />}
+              rightSection={
+                <div className={styles['hide-mobile']}>
+                  <Kbd>R</Kbd>
+                </div>
+              }
+              style={{ fontFamily: gaegu.style.fontFamily }}
+            >
+              Enter gacha hell
+            </Button>
           </div>
         </div>
-      )}
+        <div className={styles['mobile-spacer']} />
+      </div>
+    </div>
+  )
+}
+
+// Main page component
+export default function SharePage() {
+  return (
+    <div className={styles.page}>
+      <Suspense fallback={<div />}>
+        <ShareContent />
+      </Suspense>
     </div>
   )
 }
