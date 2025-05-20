@@ -14,6 +14,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <meta
+          name="google-site-verification"
+          content="BMzqne3UdXMN1j77cizKuuNIMmSalRQ5X0QsTYrlx-E"
+        />
         <ColorSchemeScript forceColorScheme="light" />
       </head>
 
