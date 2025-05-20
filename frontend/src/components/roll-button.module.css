@@ -31,6 +31,10 @@
   white-space: nowrap;
   height: auto;
 
+  @media (max-width: $mantine-breakpoint-sm) {
+    height: 48px;
+  }
+
   &:hover {
     background-color: var(--mantine-color-pink-5);
     transform: translateY(-4px) scale(1.05);
@@ -75,10 +79,64 @@
 
 .hide-on-mobile {
   display: inline;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    display: none !important;
+  }
 }
 
-@media (max-width: $mantine-breakpoint-md) {
-  .hide-on-mobile {
-    display: none !important;
+.controls-container {
+  position: fixed;
+  bottom: calc(var(--mantine-spacing-md) * 2.5 + 48px);
+  right: var(--mantine-spacing-md);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-md);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    bottom: calc(var(--mantine-spacing-md) + 60px);
+  }
+}
+
+.share-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mantine-spacing-xs);
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  &[title='Copied!'] {
+    background: rgba(20, 184, 166, 0.85);
+    border-color: rgba(255, 255, 255, 0.4);
+    animation: pulse 0.3s ease;
+  }
+}
+
+.share-icon {
+  transition: all 0.2s ease;
+  opacity: 0.9;
+  color: white;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
   }
 }

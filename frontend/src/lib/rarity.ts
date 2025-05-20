@@ -68,7 +68,7 @@ export function getRarityColor(rank: RarityRank): string {
   const colors = {
     D: '#808080', // Gray
     C: '#00FF00', // Green
-    B: '#0000FF', // Blue
+    B: '#00CED1', // Teal
     A: '#800080', // Purple
     S: '#FFD700', // Gold
     SS: '#FF69B4', // Pink

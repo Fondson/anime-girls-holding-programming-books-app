@@ -1,9 +1,10 @@
 import { Button, Kbd } from '@mantine/core'
+import { IconShare, IconCheck } from '@tabler/icons-react'
 import classes from '~/components/roll-button.module.css'
-import React, { useCallback, useState } from 'react'
-import { useHotkeys } from '@mantine/hooks'
+import React, { useState, forwardRef, useImperativeHandle } from 'react'
+import { useHotkeys, useClipboard } from '@mantine/hooks'
 import ExpandableImages from './expandable-images'
-import { calculateRarity, RarityInfo, RarityRank, getRarityColor } from '~/lib/rarity'
+import { calculateRarity, RarityInfo } from '~/lib/rarity'
 import RarityAnimation from './rarity-animation'
 
 interface ImageInfo {
@@ -17,70 +18,120 @@ interface RollButtonProps {
   fontFamily: string
 }
 
-const RollButton: React.FC<RollButtonProps> = ({ images, fontFamily }) => {
+export interface RollButtonRef {
+  triggerRoll: () => void
+}
+
+const RollButton = forwardRef<RollButtonRef, RollButtonProps>(({ images, fontFamily }, ref) => {
   const [isRolling, setIsRolling] = useState(false)
   const [selectedImage, setSelectedImage] = useState<ImageInfo | null>(null)
-  const [showImage, setShowImage] = useState(false)
   const [rarityInfo, setRarityInfo] = useState<RarityInfo | null>(null)
   const [showRarityAnimation, setShowRarityAnimation] = useState(false)
   const [animationTrigger, setAnimationTrigger] = useState(0)
+  const [showCopied, setShowCopied] = useState(false)
+  const clipboard = useClipboard({ timeout: 2000 })
 
   const handleRoll = () => {
     if (isRolling || !images || images.length === 0) return
     setIsRolling(true)
-    setShowImage(false)
     setShowRarityAnimation(false)
     setSelectedImage(null)
     setRarityInfo(null)
+    setShowCopied(false)
 
-    // Random selection from images array
     const randomIndex = Math.floor(Math.random() * images.length)
     const newImage = images[randomIndex]
-
-    // Calculate rarity
     const rarity = calculateRarity(newImage.path, images)
 
     setSelectedImage(newImage)
     setRarityInfo(rarity)
-    setShowImage(true)
     setShowRarityAnimation(true)
     setAnimationTrigger((prev) => prev + 1)
     setIsRolling(false)
   }
 
-  const handleClose = () => {
-    setSelectedImage(null)
-    setShowRarityAnimation(false)
-    setRarityInfo(null)
+  useImperativeHandle(ref, () => ({
+    triggerRoll: handleRoll,
+  }))
+
+  const generateShareUrl = () => {
+    if (selectedImage && typeof window !== 'undefined') {
+      const basePath = '/share'
+      const base64Path = btoa(selectedImage.path)
+      return `${window.location.origin}${basePath}?i=${base64Path}`
+    }
+    return ''
+  }
+
+  const handleShare = () => {
+    if (!selectedImage) return
+    const url = generateShareUrl()
+    clipboard.copy(url)
+    setShowCopied(true)
+    setTimeout(() => setShowCopied(false), 2000)
   }
 
   useHotkeys([
-    [
-      'r',
-      () => {
-        if (selectedImage !== null) {
-          // If modal is open and R is pressed, roll a new one
-          handleRoll()
-          return
-        }
-        // If modal is closed and R is pressed, open it with a roll
-        if (
-          document.activeElement instanceof HTMLInputElement ||
-          document.activeElement instanceof HTMLTextAreaElement
-        ) {
-          return
-        }
-        handleRoll()
-      },
-    ],
+    ['r', handleRoll],
+    ['s', handleShare],
   ])
 
   return (
     <>
+      {selectedImage && (
+        <ExpandableImages
+          images={[selectedImage]}
+          initialImageIndex={0}
+          expanded={true}
+          fill
+          onClose={() => {
+            setSelectedImage(null)
+            setRarityInfo(null)
+            setShowRarityAnimation(false)
+            setShowCopied(false)
+          }}
+          topRightSection={(currentImage) => (
+            <>
+              <a
+                href={currentImage.src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${classes['image-web-link']} web-link`}
+              >
+                {currentImage.path}
+              </a>
+            </>
+          )}
+        />
+      )}
+
+      {selectedImage && rarityInfo && !isRolling && (
+        <div className={classes['controls-container']}>
+          {showRarityAnimation && rarityInfo && (
+            <RarityAnimation rank={rarityInfo.rank} trigger={animationTrigger} />
+          )}
+          <div
+            className={classes['share-container']}
+            title={showCopied ? 'Copied!' : 'Share this roll'}
+          >
+            {showCopied ? (
+              <IconCheck size={20} className={classes['share-icon']} />
+            ) : (
+              <IconShare
+                size={20}
+                className={classes['share-icon']}
+                style={{ cursor: 'pointer' }}
+                onClick={handleShare}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
       <Button
         className={classes['roll-button']}
         onClick={handleRoll}
-        disabled={isRolling || images.length === 0}
+        disabled={isRolling}
         rightSection={
           <Kbd size="xs" className={classes['hide-on-mobile']}>
             R
@@ -90,32 +141,10 @@ const RollButton: React.FC<RollButtonProps> = ({ images, fontFamily }) => {
       >
         💫 Waifu Gacha
       </Button>
-      {selectedImage && (
-        <div hidden>
-          <ExpandableImages
-            images={[selectedImage]}
-            initialImageIndex={0}
-            expanded={true}
-            onClose={handleClose}
-            fill
-            topRightSection={(currentImage) => (
-              <a
-                href={currentImage.src}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${classes['image-web-link']} web-link`}
-              >
-                {currentImage.path}
-              </a>
-            )}
-          />
-        </div>
-      )}
-      {showRarityAnimation && rarityInfo && (
-        <RarityAnimation rank={rarityInfo.rank} trigger={animationTrigger} />
-      )}
     </>
   )
-}
+})
+
+RollButton.displayName = 'RollButton'
 
 export default RollButton

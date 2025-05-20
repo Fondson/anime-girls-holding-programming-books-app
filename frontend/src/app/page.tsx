@@ -26,7 +26,7 @@ import ExportedImage from 'next-image-export-optimizer'
 import logo from '~/icons/logo.png'
 import notFoundIcon from '~/icons/not-found.webp'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import RollButton from '~/components/roll-button'
+import RollButton, { RollButtonRef } from '~/components/roll-button'
 
 const gaegu = Gaegu({ weight: ['400', '700'], subsets: ['latin'] })
 
@@ -36,6 +36,7 @@ function Home() {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const { replace } = useRouter()
+  const rollButtonRef = useRef<RollButtonRef>(null)
 
   const { data, loading, error, refetch, abort } = useAnimeGirlsHoldingProgrammingBooksData()
   const [searchValue, setSearchValue] = useState(searchParams.get('q') || '')
@@ -111,6 +112,22 @@ function Home() {
     rowVirtualizer.scrollToIndex(0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchValue, data, workerReady])
+
+  // Check for auto-roll parameter
+  useEffect(() => {
+    const shouldAutoRoll = searchParams.get('roll') === 'true'
+    if (shouldAutoRoll && rollButtonRef.current && data && workerReady && !loading) {
+      // Small delay to ensure everything is ready
+      setTimeout(() => {
+        // Remove the roll parameter
+        const params = new URLSearchParams(searchParams)
+        params.delete('roll')
+        replace(`${pathname}?${params.toString()}`)
+        // Trigger the roll
+        rollButtonRef.current?.triggerRoll()
+      }, 500)
+    }
+  }, [searchParams, pathname, replace, data, workerReady, loading])
 
   const onSearchValueChange = (val: string) => {
     setSearchValue(val)
@@ -288,7 +305,9 @@ function Home() {
             <Code>{`console.log('No results found')`}</Code>
           </div>
         ))}
-      {!gridImageExpanded && <RollButton images={allImages} fontFamily={gaegu.style.fontFamily} />}
+      {!gridImageExpanded && (
+        <RollButton ref={rollButtonRef} images={allImages} fontFamily={gaegu.style.fontFamily} />
+      )}
     </main>
   )
 }

@@ -23,30 +23,26 @@
 }
 
 .container {
-  position: fixed;
-  bottom: var(--mantine-spacing-md);
-  right: var(--mantine-spacing-md);
-  z-index: 1500;
-  pointer-events: none;
-  user-select: none;
+  position: relative;
+  display: inline-flex;
 }
 
 .rank {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.85);
   color: var(--rarity-color);
   padding: 8px 16px;
   border-radius: 8px;
   font-weight: 900;
-  font-size: 2.5rem;
-  text-shadow: 0 0 10px var(--rarity-color);
+  font-size: 2rem;
+  text-shadow: 0 0 20px var(--rarity-color);
   border: 2px solid var(--rarity-color);
-  box-shadow: 0 0 20px var(--rarity-color);
-  min-width: 3ch;
+  box-shadow: 0 0 40px var(--rarity-color);
+  min-width: 2ch;
   text-align: center;
-  margin-bottom: calc(var(--mantine-spacing-xl) * 2.5);
+  backdrop-filter: blur(8px);
 
   @media (max-width: $mantine-breakpoint-md) {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 }
 
