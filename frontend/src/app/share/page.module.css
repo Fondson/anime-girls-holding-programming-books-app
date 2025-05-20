@@ -141,7 +141,6 @@
 
 .cta {
   position: sticky;
-  top: 2rem;
   width: 360px;
   display: flex;
   flex-direction: column;
