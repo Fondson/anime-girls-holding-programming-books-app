@@ -2,27 +2,63 @@ import { Button, Kbd } from '@mantine/core'
 import classes from '~/components/roll-button.module.css'
 import React, { useCallback, useState } from 'react'
 import { useHotkeys } from '@mantine/hooks'
-import ExpandableImages from '~/components/expandable-images'
+import ExpandableImages from './expandable-images'
+import { calculateRarity, RarityInfo, RarityRank, getRarityColor } from '~/lib/rarity'
+import RarityAnimation from './rarity-animation'
+
+interface ImageInfo {
+  src: string
+  alt: string
+  path: string
+}
 
 interface RollButtonProps {
-  images: { src: string; alt: string; path: string }[]
-  fontFamily?: string
+  images: ImageInfo[]
+  fontFamily: string
 }
 
 const RollButton: React.FC<RollButtonProps> = ({ images, fontFamily }) => {
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
+  const [isRolling, setIsRolling] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<ImageInfo | null>(null)
+  const [showImage, setShowImage] = useState(false)
+  const [rarityInfo, setRarityInfo] = useState<RarityInfo | null>(null)
+  const [showRarityAnimation, setShowRarityAnimation] = useState(false)
+  const [animationTrigger, setAnimationTrigger] = useState(0)
 
-  const handleRoll = useCallback(() => {
-    if (!images || images.length === 0) return
+  const handleRoll = () => {
+    if (isRolling || !images || images.length === 0) return
+    setIsRolling(true)
+    setShowImage(false)
+    setShowRarityAnimation(false)
+    setSelectedImage(null)
+    setRarityInfo(null)
+
+    // Random selection from images array
     const randomIndex = Math.floor(Math.random() * images.length)
-    setSelectedImageIndex(randomIndex)
-  }, [images])
+    const newImage = images[randomIndex]
+
+    // Calculate rarity
+    const rarity = calculateRarity(newImage.path, images)
+
+    setSelectedImage(newImage)
+    setRarityInfo(rarity)
+    setShowImage(true)
+    setShowRarityAnimation(true)
+    setAnimationTrigger((prev) => prev + 1)
+    setIsRolling(false)
+  }
+
+  const handleClose = () => {
+    setSelectedImage(null)
+    setShowRarityAnimation(false)
+    setRarityInfo(null)
+  }
 
   useHotkeys([
     [
       'r',
       () => {
-        if (selectedImageIndex !== null) {
+        if (selectedImage !== null) {
           // If modal is open and R is pressed, roll a new one
           handleRoll()
           return
@@ -39,38 +75,34 @@ const RollButton: React.FC<RollButtonProps> = ({ images, fontFamily }) => {
     ],
   ])
 
-  const handleClose = () => {
-    setSelectedImageIndex(null)
-  }
-
   return (
     <>
       <Button
         className={classes['roll-button']}
         onClick={handleRoll}
-        disabled={selectedImageIndex !== null && images.length === 0}
+        disabled={isRolling || images.length === 0}
         rightSection={
           <Kbd size="xs" className={classes['hide-on-mobile']}>
             R
           </Kbd>
         }
-        style={{ fontFamily: fontFamily }}
+        style={{ fontFamily }}
       >
         💫 Waifu Gacha
       </Button>
-      {selectedImageIndex !== null && images.length > 0 && (
+      {selectedImage && (
         <div hidden>
           <ExpandableImages
-            images={images.slice(selectedImageIndex, selectedImageIndex + 1)}
+            images={[selectedImage]}
             initialImageIndex={0}
             expanded={true}
             onClose={handleClose}
-            width={1}
-            height={1}
+            fill
             topRightSection={(currentImage) => (
               <a
                 href={currentImage.src}
                 target="_blank"
+                rel="noopener noreferrer"
                 className={`${classes['image-web-link']} web-link`}
               >
                 {currentImage.path}
@@ -78,6 +110,9 @@ const RollButton: React.FC<RollButtonProps> = ({ images, fontFamily }) => {
             )}
           />
         </div>
+      )}
+      {showRarityAnimation && rarityInfo && (
+        <RarityAnimation rank={rarityInfo.rank} trigger={animationTrigger} />
       )}
     </>
   )

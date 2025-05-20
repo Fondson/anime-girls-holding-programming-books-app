@@ -1,0 +1,76 @@
+@keyframes spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes glow {
+  0% {
+    filter: brightness(1) drop-shadow(0 0 0px currentColor);
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 20px currentColor);
+  }
+  100% {
+    filter: brightness(1) drop-shadow(0 0 0px currentColor);
+  }
+}
+
+.container {
+  position: fixed;
+  bottom: var(--mantine-spacing-md);
+  right: var(--mantine-spacing-md);
+  z-index: 1500;
+  pointer-events: none;
+  user-select: none;
+}
+
+.rank {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--rarity-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 2.5rem;
+  text-shadow: 0 0 10px var(--rarity-color);
+  border: 2px solid var(--rarity-color);
+  box-shadow: 0 0 20px var(--rarity-color);
+  min-width: 3ch;
+  text-align: center;
+  margin-bottom: calc(var(--mantine-spacing-xl) * 2.5);
+
+  @media (max-width: $mantine-breakpoint-md) {
+    font-size: 2rem;
+  }
+}
+
+.rank.animating {
+  animation: flash 0.05s ease-in-out;
+}
+
+.rarity {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--rarity-color);
+  margin: 0;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
