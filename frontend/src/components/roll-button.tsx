@@ -79,30 +79,32 @@ const RollButton = forwardRef<RollButtonRef, RollButtonProps>(({ images, fontFam
   return (
     <>
       {selectedImage && (
-        <ExpandableImages
-          images={[selectedImage]}
-          initialImageIndex={0}
-          expanded={true}
-          fill
-          onClose={() => {
-            setSelectedImage(null)
-            setRarityInfo(null)
-            setShowRarityAnimation(false)
-            setShowCopied(false)
-          }}
-          topRightSection={(currentImage) => (
-            <>
-              <a
-                href={currentImage.src}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${classes['image-web-link']} web-link`}
-              >
-                {currentImage.path}
-              </a>
-            </>
-          )}
-        />
+        <div hidden>
+          <ExpandableImages
+            images={[selectedImage]}
+            initialImageIndex={0}
+            expanded={true}
+            fill
+            onClose={() => {
+              setSelectedImage(null)
+              setRarityInfo(null)
+              setShowRarityAnimation(false)
+              setShowCopied(false)
+            }}
+            topRightSection={(currentImage) => (
+              <>
+                <a
+                  href={currentImage.src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${classes['image-web-link']} web-link`}
+                >
+                  {currentImage.path}
+                </a>
+              </>
+            )}
+          />
+        </div>
       )}
 
       {selectedImage && rarityInfo && !isRolling && (
