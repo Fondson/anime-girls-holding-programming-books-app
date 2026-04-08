@@ -8,7 +8,7 @@ import '~/app/global.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = defaultMetadata()
+export const metadata: Metadata = defaultMetadata
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
