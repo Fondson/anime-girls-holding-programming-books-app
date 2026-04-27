@@ -107,7 +107,8 @@ function Home() {
     } else {
       params.delete('q')
     }
-    replace(`${pathname}?${params.toString()}`)
+    const queryString = params.toString()
+    replace(queryString ? `${pathname}?${queryString}` : pathname)
 
     rowVirtualizer.scrollToIndex(0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,7 +123,8 @@ function Home() {
         // Remove the roll parameter
         const params = new URLSearchParams(searchParams)
         params.delete('roll')
-        replace(`${pathname}?${params.toString()}`)
+        const queryString = params.toString()
+        replace(queryString ? `${pathname}?${queryString}` : pathname)
         // Trigger the roll
         rollButtonRef.current?.triggerRoll()
       }, 500)

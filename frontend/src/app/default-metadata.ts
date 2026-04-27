@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(process.env.BASE_URL || 'https://anime-girls-holding-programming-books.com'),
   alternates: {
-    canonical: 'https://anime-girls-holding-programming-books.com/',
+    canonical: '/',
   },
   title: {
     template: '%s | Anime Girls Holding Programming Books',
