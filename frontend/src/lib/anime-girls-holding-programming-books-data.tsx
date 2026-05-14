@@ -34,7 +34,7 @@ const useAnimeGirlsHoldingProgrammingBooksData = () => {
   const data = useMemo(
     () =>
       rawData?.tree
-        .filter(
+        ?.filter(
           ({ path }) => path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg'),
         )
         .map(({ path }) => {
